@@ -1,0 +1,55 @@
+<div class="container">
+    <mat-card>
+      <mat-card-title>Pilot Briefing</mat-card-title>
+      <mat-card-content>
+        <form [formGroup]="briefingForm" (ngSubmit)="onSubmit()">
+          <div formGroupName="reportTypes">
+            <mat-checkbox formControlName="METAR">METAR</mat-checkbox>
+            <mat-checkbox formControlName="TAF">TAF</mat-checkbox>
+            <mat-checkbox formControlName="SIGMET">SIGMET</mat-checkbox>
+          </div>
+  
+          <mat-form-field appearance="fill">
+            <mat-label>Airports (ICAO Codes)</mat-label>
+            <input matInput formControlName="airports" placeholder="E.g., LZIB LKPR EDDF EGLL">
+          </mat-form-field>
+  
+          <mat-form-field appearance="fill">
+            <mat-label>Countries (WMO Codes)</mat-label>
+            <input matInput formControlName="countries" placeholder="E.g., SQ CZ UK DL">
+          </mat-form-field>
+  
+          <button mat-raised-button color="primary" type="submit">Create Briefing</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  
+    <div *ngIf="briefingData">
+      <mat-card *ngFor="let station of getKeys(briefingData)">
+        <mat-card-title>{{ station }}</mat-card-title>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <table mat-table [dataSource]="briefingData[station]" class="mat-elevation-z8">
+            <ng-container matColumnDef="queryType">
+              <th mat-header-cell *matHeaderCellDef> Report Type </th>
+              <td mat-cell *matCellDef="let element"> {{ element.queryType }} </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="reportTime">
+              <th mat-header-cell *matHeaderCellDef> Report Time </th>
+              <td mat-cell *matCellDef="let element"> {{ formatReportTime(element.reportTime) }} </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="text">
+              <th mat-header-cell *matHeaderCellDef> Report Body </th>
+              <td mat-cell *matCellDef="let element"> <span [innerHTML]="highlightText(element.text)"></span> </td>
+            </ng-container>
+  
+            <tr mat-header-row *matHeaderRowDef="['queryType', 'reportTime', 'text']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['queryType', 'reportTime', 'text'];"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  
